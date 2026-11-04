@@ -99,6 +99,21 @@ return [
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
 
+        'old_crm' => [
+            'driver' => 'mysql',
+            'host' => env('OLD_CRM_DB_HOST', '127.0.0.1'),
+            'port' => env('OLD_CRM_DB_PORT', '3306'),
+            'database' => env('OLD_CRM_DB_DATABASE', 'manageredstarweb'),
+            'username' => env('OLD_CRM_DB_USERNAME', ''),
+            'password' => env('OLD_CRM_DB_PASSWORD', ''),
+            'unix_socket' => '',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),

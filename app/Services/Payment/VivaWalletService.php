@@ -30,7 +30,7 @@ class VivaWalletService
         $startTime = microtime(true);
 
         $payload = [
-            'amount' => $payment->amount * 100, // Convert to cents
+            'amount' => (int) round($payment->amount * 100), // Convert to cents
             'customerTrns' => $payment->project?->title ?? "Payment #{$payment->id}",
             'customer' => [
                 'email' => $payment->client?->email,
@@ -118,14 +118,28 @@ class VivaWalletService
             return ['status' => 'error', 'message' => 'Payment not found'];
         }
 
-        // EventTypeId: 1796 = Successful Payment
-        if ($eventType == 1796 && $transactionData['StatusId'] === 'F') {
+        $statusId = $transactionData['StatusId'] ?? null;
+
+        if ($eventType == 1796 && $statusId === 'F') {
+            // Successful payment
             $payment->update([
                 'status' => 'paid',
                 'paid_at' => now(),
                 'metadata' => array_merge($payment->metadata ?? [], [
                     'viva_transaction_id' => $transactionId,
                 ]),
+            ]);
+        } elseif ($statusId === 'E') {
+            // Error
+            $payment->update([
+                'status' => 'failed',
+                'failure_reason' => 'Payment error (Viva StatusId: E)',
+            ]);
+        } elseif ($statusId === 'C') {
+            // Cancelled
+            $payment->update([
+                'status' => 'failed',
+                'failure_reason' => 'Payment cancelled by user',
             ]);
         }
 
@@ -154,7 +168,7 @@ class VivaWalletService
             }
 
             $payload = [
-                'Amount' => $payment->amount * 100,
+                'Amount' => (int) round($payment->amount * 100),
                 'ActionUser' => auth()->user()?->email ?? 'system',
             ];
 

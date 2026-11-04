@@ -20,7 +20,7 @@
 <p>If you believe this was rejected in error or if you have additional information to provide, please contact your manager or submit a new expense with the necessary documentation.</p>
 
 <div style="text-align: center;">
-    <a href="{{ route('filament.admin.resources.expenses.view', $expense) }}" class="button">View Expense</a>
+    <a href="{{ route('filament.admin.resources.expenses.edit', $expense) }}" class="button">View Expense</a>
 </div>
 
 <p>Best regards,<br>{{ $expense->entity->name }}</p>

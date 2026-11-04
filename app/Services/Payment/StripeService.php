@@ -28,7 +28,7 @@ class StripeService
                 'line_items' => [[
                     'price_data' => [
                         'currency' => strtolower($payment->currency),
-                        'unit_amount' => $payment->amount * 100, // Convert to cents
+                        'unit_amount' => (int) round($payment->amount * 100), // Convert to cents
                         'product_data' => [
                             'name' => $payment->project?->title ?? 'Payment',
                             'description' => "Payment #{$payment->id}",

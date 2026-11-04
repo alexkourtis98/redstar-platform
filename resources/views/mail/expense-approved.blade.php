@@ -10,7 +10,7 @@
 <div class="success-box">
     <strong>Title:</strong> {{ $expense->title }}<br>
     <strong>Amount:</strong> {{ number_format($expense->amount, 2) }} {{ $expense->currency }}<br>
-    <strong>Approved by:</strong> {{ $expense->approvedBy->name ?? 'Administrator' }}<br>
+    <strong>Approved by:</strong> {{ $expense->approver->name ?? 'Administrator' }}<br>
     <strong>Approved on:</strong> {{ $expense->approved_at->format('F d, Y') }}
 </div>
 
@@ -21,7 +21,7 @@
 <p>The expense will be processed and reimbursed according to the company's payment schedule.</p>
 
 <div style="text-align: center;">
-    <a href="{{ route('filament.admin.resources.expenses.view', $expense) }}" class="button">View Expense</a>
+    <a href="{{ route('filament.admin.resources.expenses.edit', $expense) }}" class="button">View Expense</a>
 </div>
 
 <p>Best regards,<br>{{ $expense->entity->name }}</p>

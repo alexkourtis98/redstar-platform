@@ -3,10 +3,12 @@
 namespace App\Listeners;
 
 use App\Events\PaymentSucceeded;
+use App\Mail\InvoiceDeliveryMail;
 use App\Models\Invoice;
 use App\Services\Invoicing\AadeInvoicingService;
 use App\Services\Invoicing\InvoicePdfService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class GenerateInvoice
 {
@@ -69,6 +71,14 @@ class GenerateInvoice
                 $pdfPath = $pdfService->generatePdf($invoice->fresh());
                 Log::info("Invoice PDF generated: {$pdfPath}");
 
+                // Send email directly (fresh() breaks wasChanged() in observer)
+                $invoice->refresh();
+                if ($invoice->mark && $invoice->pdf_path && $invoice->client?->email) {
+                    Mail::to($invoice->client->email)
+                        ->send(new InvoiceDeliveryMail($invoice));
+                    Log::info("Invoice email sent for invoice {$invoice->id}");
+                }
+
             } catch (\Exception $e) {
                 Log::error("AADE transmission failed for invoice {$invoice->id}: " . $e->getMessage());
 
@@ -85,6 +95,14 @@ class GenerateInvoice
                 $pdfService = app(InvoicePdfService::class);
                 $pdfPath = $pdfService->generatePdf($invoice->fresh());
                 Log::info("Invoice PDF generated: {$pdfPath}");
+
+                // Send email directly (fresh() breaks wasChanged() in observer)
+                $invoice->refresh();
+                if ($invoice->pdf_path && $invoice->client?->email) {
+                    Mail::to($invoice->client->email)
+                        ->send(new InvoiceDeliveryMail($invoice));
+                    Log::info("Invoice email sent for invoice {$invoice->id}");
+                }
             } catch (\Exception $e) {
                 Log::error("PDF generation failed for invoice {$invoice->id}: " . $e->getMessage());
             }

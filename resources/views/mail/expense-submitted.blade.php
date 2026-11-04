@@ -24,7 +24,7 @@
 @endif
 
 <div style="text-align: center;">
-    <a href="{{ route('filament.admin.resources.expenses.view', $expense) }}" class="button">Review Expense</a>
+    <a href="{{ route('filament.admin.resources.expenses.edit', $expense) }}" class="button">Review Expense</a>
 </div>
 
 <p>Please review and approve or reject this expense at your earliest convenience.</p>

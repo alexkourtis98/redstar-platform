@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Payment extends Model
 {
@@ -32,6 +33,7 @@ class Payment extends Model
         'paid_at',
         'refunded_at',
         'failure_reason',
+        'notes',
     ];
 
     protected $casts = [
@@ -41,6 +43,23 @@ class Payment extends Model
         'paid_at' => 'datetime',
         'refunded_at' => 'datetime',
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (Payment $payment) {
+            if (!$payment->payment_link_token) {
+                $payment->payment_link_token = Str::uuid()->toString();
+                $payment->link_expires_at = now()->addDays(7);
+            }
+        });
+    }
+
+    public function getFormattedAmountAttribute(): string
+    {
+        return number_format($this->amount, 2) . ' ' . strtoupper($this->currency ?? 'EUR');
+    }
 
     public function client(): BelongsTo
     {

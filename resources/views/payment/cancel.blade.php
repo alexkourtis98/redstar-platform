@@ -31,7 +31,7 @@
             @endif
 
             <p class="text-sm text-gray-500">
-                Need help? Contact support at <a href="mailto:support@{{ config('app.domain') }}" class="text-blue-600 hover:underline">support@{{ config('app.domain') }}</a>
+                Need help? Contact support at <a href="mailto:support@{{ parse_url(config('app.url'), PHP_URL_HOST) }}" class="text-blue-600 hover:underline">support@{{ parse_url(config('app.url'), PHP_URL_HOST) }}</a>
             </p>
         </div>
     </div>

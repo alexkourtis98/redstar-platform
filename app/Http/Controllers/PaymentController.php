@@ -60,6 +60,10 @@ class PaymentController extends Controller
     {
         $payment = Payment::where('payment_link_token', $token)->firstOrFail();
 
+        if (!$payment->isPaid()) {
+            return redirect()->route('payment.checkout', $token);
+        }
+
         return view('payment.success', compact('payment'));
     }
 

@@ -86,7 +86,7 @@ class PaymentResource extends Resource
                     ->label('Project')
                     ->searchable()
                     ->limit(30)
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
                     ->colors([
