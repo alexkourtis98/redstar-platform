@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -82,9 +83,10 @@ class PaymentResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('project.title')
+                    ->label('Project')
                     ->searchable()
                     ->limit(30)
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
                     ->colors([
@@ -138,12 +140,21 @@ class PaymentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('copyLink')
+                    ->label('Copy Link')
                     ->icon('heroicon-o-link')
                     ->color('primary')
                     ->visible(fn (Payment $record) => $record->payment_link_token && !$record->linkExpired())
                     ->action(function (Payment $record) {
-                        return redirect()->to(route('payment.checkout', $record->payment_link_token));
-                    }),
+                        $url = route('payment.checkout', $record->payment_link_token);
+                        Notification::make()
+                            ->title('Payment link copied')
+                            ->body($url)
+                            ->success()
+                            ->send();
+                    })
+                    ->extraAttributes(fn (Payment $record) => [
+                        'x-on:click' => "window.navigator.clipboard.writeText('" . route('payment.checkout', $record->payment_link_token) . "')",
+                    ]),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
